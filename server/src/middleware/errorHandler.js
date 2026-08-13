@@ -1,11 +1,10 @@
 function errorHandler(err, req, res, next) {
-    console.error(err);
-
     const statusCode = err.statusCode || 500;
-
-    res.status(statusCode).json({
-        error: err.message || "Internal server error"
-    });
+    if (statusCode >= 500) {
+        console.error(err);
+    }
+    res.status(statusCode).json({ error: err.message });
 }
 
 module.exports = errorHandler;
+

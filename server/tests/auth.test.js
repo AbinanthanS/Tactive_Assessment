@@ -1,9 +1,21 @@
 const request = require("supertest");
 const app = require("../src/app");
+const pool = require("../src/config/db");
 
 describe("Authentication", () => {
     const email = `test-${Date.now()}@example.com`;
     const password = "password123";
+
+    // Pay the connection/SSL-handshake cost once, up front, so it doesn't
+    // eat into the first test's timeout budget.
+    beforeAll(async () => {
+        await pool.query("SELECT 1");
+    }, 30000);
+
+    // Close the pool so Jest doesn't hang on an open TCP handle afterward.
+    afterAll(async () => {
+        await pool.end();
+    });
 
     test("should register a new user", async () => {
         const response = await request(app)
