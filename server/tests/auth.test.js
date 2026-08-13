@@ -12,10 +12,10 @@ describe("Authentication", () => {
         await pool.query("SELECT 1");
     }, 30000);
 
-    // Close the pool so Jest doesn't hang on an open TCP handle afterward.
-    afterAll(async () => {
-        await pool.end();
-    });
+    // // Close the pool so Jest doesn't hang on an open TCP handle afterward.
+    // afterAll(async () => {
+    //     await pool.end();
+    // });
 
     test("should register a new user", async () => {
         const response = await request(app)

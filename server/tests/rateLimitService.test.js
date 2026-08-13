@@ -9,6 +9,11 @@ describe("Rate limit service", () => {
     let apiKeyId;
 
     beforeAll(async () => {
+        // Make sure the database connection is established
+        // before the actual test starts.
+        await pool.query("SELECT 1");
+
+        // Get an existing user for the test API key.
         const userResult = await pool.query(
             `
             SELECT id
@@ -18,11 +23,14 @@ describe("Rate limit service", () => {
         );
 
         if (userResult.rows.length === 0) {
-            throw new Error("Create a user before running tests");
+            throw new Error(
+                "Create a user before running rate limiter tests"
+            );
         }
 
         const userId = userResult.rows[0].id;
 
+        // Create a dedicated API key for this test.
         const result = await pool.query(
             `
             INSERT INTO api_keys (
@@ -34,7 +42,15 @@ describe("Rate limit service", () => {
                 window_seconds,
                 status
             )
-            VALUES ($1, $2, $3, 'FREE', 3, 60, 'ACTIVE')
+            VALUES (
+                $1,
+                $2,
+                $3,
+                'FREE',
+                3,
+                60,
+                'ACTIVE'
+            )
             RETURNING id
             `,
             [
@@ -45,9 +61,10 @@ describe("Rate limit service", () => {
         );
 
         apiKeyId = result.rows[0].id;
-    });
+    }, 30000);
 
     afterAll(async () => {
+        // Remove the rate-limit records created by this test.
         await pool.query(
             `
             DELETE FROM rate_limit_windows
@@ -56,6 +73,7 @@ describe("Rate limit service", () => {
             [apiKeyId]
         );
 
+        // Remove the temporary API key.
         await pool.query(
             `
             DELETE FROM api_keys
@@ -63,32 +81,42 @@ describe("Rate limit service", () => {
             `,
             [apiKeyId]
         );
-    });
 
-    test("should allow requests up to the limit and reject the next request", async () => {
-    const results = [];
+        // Close PostgreSQL connection pool.
+        await pool.end();
+    }, 30000);
 
-    for (let i = 0; i < 4; i++) {
-        results.push(
-            await consumeRateLimit(
-                apiKeyId,
-                3,
-                60
-            )
-        );
-    }
+    test(
+        "should allow requests up to the limit and reject the next request",
+        async () => {
+            const results = [];
 
-    expect(results[0].allowed).toBe(true);
-    expect(results[0].requestCount).toBe(1);
+            for (let i = 0; i < 4; i++) {
+                results.push(
+                    await consumeRateLimit(
+                        apiKeyId,
+                        3,
+                        60
+                    )
+                );
+            }
 
-    expect(results[1].allowed).toBe(true);
-    expect(results[1].requestCount).toBe(2);
+            // Request 1 → allowed
+            expect(results[0].allowed).toBe(true);
+            expect(results[0].requestCount).toBe(1);
 
-    expect(results[2].allowed).toBe(true);
-    expect(results[2].requestCount).toBe(3);
+            // Request 2 → allowed
+            expect(results[1].allowed).toBe(true);
+            expect(results[1].requestCount).toBe(2);
 
-    expect(results[3].allowed).toBe(false);
-    expect(results[3].requestCount).toBe(4);
-    
-    });
+            // Request 3 → allowed
+            expect(results[2].allowed).toBe(true);
+            expect(results[2].requestCount).toBe(3);
+
+            // Request 4 → rejected
+            expect(results[3].allowed).toBe(false);
+            expect(results[3].requestCount).toBe(4);
+        },
+        15000
+    );
 });
