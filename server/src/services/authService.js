@@ -26,6 +26,43 @@ async function registerUser(email, password) {
     return result.rows[0];
 }
 
+async function loginUser(email, password) {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const result = await pool.query(
+        `SELECT id, email, password_hash, role
+         FROM users
+         WHERE email = $1`,
+        [normalizedEmail]
+    );
+
+    if (result.rows.length === 0) {
+        const error = new Error("Invalid email or password");
+        error.statusCode = 401;
+        throw error;
+    }
+
+    const user = result.rows[0];
+
+    const passwordMatches = await bcrypt.compare(
+        password,
+        user.password_hash
+    );
+
+    if (!passwordMatches) {
+        const error = new Error("Invalid email or password");
+        error.statusCode = 401;
+        throw error;
+    }
+
+    return {
+        id: user.id,
+        email: user.email,
+        role: user.role
+    };
+}
+
 module.exports = {
-    registerUser
+    registerUser,
+    loginUser
 };
