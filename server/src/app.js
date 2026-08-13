@@ -1,5 +1,7 @@
 const express = require("express");
+
 const authRoutes = require("./routes/authRoutes");
+const apiKeyRoutes = require("./routes/apiKeyRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const authenticate = require("./middleware/auth");
 
@@ -21,6 +23,8 @@ app.get("/api/me", authenticate, (req, res) => {
         user: req.user
     });
 });
+
+app.use("/api/keys", apiKeyRoutes);
 
 app.use(errorHandler);
 
