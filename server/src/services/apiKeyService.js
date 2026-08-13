@@ -92,7 +92,27 @@ async function getApiKeys(userId) {
     return result.rows;
 }
 
+async function revokeApiKey(userId, apiKeyId) {
+    const result = await pool.query(
+        `UPDATE api_keys
+         SET status = 'DISABLED'
+         WHERE id = $1
+           AND user_id = $2
+         RETURNING id, name, status`,
+        [apiKeyId, userId]
+    );
+
+    if (result.rows.length === 0) {
+        const error = new Error("API key not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return result.rows[0];
+}
+
 module.exports = {
     createApiKey,
-    getApiKeys
+    getApiKeys,
+    revokeApiKey
 };

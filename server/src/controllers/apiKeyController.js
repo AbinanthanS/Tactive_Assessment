@@ -1,4 +1,4 @@
-const { createApiKey, getApiKeys } = require("../services/apiKeyService");
+const { createApiKey, getApiKeys, revokeApiKey } = require("../services/apiKeyService");
 
 async function create(req, res, next) {
     try {
@@ -43,7 +43,24 @@ async function list(req, res, next) {
     }
 }
 
+async function revoke(req, res, next) {
+    try {
+        const result = await revokeApiKey(
+            req.user.id,
+            req.params.id
+        );
+
+        return res.status(200).json({
+            message: "API key revoked successfully",
+            apiKey: result
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     create,
-    list
+    list,
+    revoke
 };

@@ -27,7 +27,7 @@ function authenticate(req, res, next) {
             id: payload.sub,
             role: payload.role
         };
-
+        
         next();
     } catch (error) {
         return res.status(401).json({
