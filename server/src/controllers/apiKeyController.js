@@ -1,4 +1,4 @@
-const { createApiKey } = require("../services/apiKeyService");
+const { createApiKey, getApiKeys } = require("../services/apiKeyService");
 
 async function create(req, res, next) {
     try {
@@ -31,6 +31,19 @@ async function create(req, res, next) {
     }
 }
 
+async function list(req, res, next) {
+    try {
+        const apiKeys = await getApiKeys(req.user.id);
+
+        return res.status(200).json({
+            apiKeys
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
-    create
+    create,
+    list
 };

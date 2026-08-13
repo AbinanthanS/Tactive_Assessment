@@ -73,6 +73,26 @@ async function createApiKey(userId, name, plan) {
     };
 }
 
+async function getApiKeys(userId) {
+    const result = await pool.query(
+        `SELECT
+            id,
+            name,
+            plan,
+            requests_per_window,
+            window_seconds,
+            status,
+            created_at
+         FROM api_keys
+         WHERE user_id = $1
+         ORDER BY created_at DESC`,
+        [userId]
+    );
+
+    return result.rows;
+}
+
 module.exports = {
-    createApiKey
+    createApiKey,
+    getApiKeys
 };
