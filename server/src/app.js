@@ -1,6 +1,7 @@
 const express = require("express");
 const authRoutes = require("./routes/authRoutes");
 const errorHandler = require("./middleware/errorHandler");
+const authenticate = require("./middleware/auth");
 
 const app = express();
 
@@ -14,6 +15,13 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+
+app.get("/api/me", authenticate, (req, res) => {
+    res.status(200).json({
+        user: req.user
+    });
+});
+
 app.use(errorHandler);
 
 module.exports = app;
