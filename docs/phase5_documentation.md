@@ -27,21 +27,21 @@ any external caching layer (no Redis, no Memcached).
 
 ## Component Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
+```              
+┌───────────────────────────────────────────────────────────── ┐
 │                     Browser (localhost:5173)                 │
-│                                                             │
-│  ┌──────────┐  ┌─────────────┐  ┌────────────────────────┐ │
-│  │  Navbar  │  │ KeyManagement│  │  RateLimitPlayground  │ │
-│  │  (auth)  │  │  (CRUD keys) │  │  (live telemetry)     │ │
-│  └──────────┘  └─────────────┘  └────────────────────────┘ │
+│                                                              │
+│  ┌──────────┐  ┌─────────────┐  ┌────────────────────────┐   │
+│  │  Navbar  │  │ KeyManagement│  │  RateLimitPlayground  │   │
+│  │  (auth)  │  │  (CRUD keys) │  │  (live telemetry)     │   │
+│  └──────────┘  └─────────────┘  └────────────────────────┘   │
 │         │              │                    │                │
 │         └──────────────┴────────────────────┘                │
 │                        │  fetch() + JWT / X-API-Key          │
 └────────────────────────┼─────────────────────────────────────┘
                          │ HTTP (CORS + exposedHeaders)
 ┌────────────────────────▼─────────────────────────────────────┐
-│                  Express Server (localhost:5000)              │
+│                  Express Server (localhost:5000)             │
 │                                                              │
 │  POST /api/auth/register   → authController → authService    │
 │  POST /api/auth/login      → authController → authService    │
