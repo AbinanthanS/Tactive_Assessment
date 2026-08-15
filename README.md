@@ -1,4 +1,4 @@
-# RateGuard — Multi-Tenant API Gateway & PostgreSQL Rate Limiter
+# RateGuard — API Rate Limiter
 
 > **Internship Hiring Assessment — Tactive**  
 > **Author:** Abinanthan S  
