@@ -4,22 +4,8 @@
 > **Author:** Abinanthan S  
 > **Repository:** [https://github.com/AbinanthanS/Tactive_Assessment](https://github.com/AbinanthanS/Tactive_Assessment)
 
----
 
-## 📋 Assessment Deliverables Index
 
-All deliverables mandated by the assessment specification are fully documented and organized in the repository:
-
-| # | Deliverable | Format | Location in Repository |
-|---|---|---|---|
-| **1** | **Source Code Repository (App + Tests) & README** | Git Repo | [Root Directory](file:///) (Frontend in `/client`, Backend in `/server`) |
-| **2** | **Test Suite & Captured Run Output (Green + Red Run)** | Markdown + Logs + Screenshots | [`docs/Test_evidence.md`](file:///docs/Test_evidence.md) |
-| **3** | **AI Change-Loop Evidence Log (Prompts, Failures, Fixes)** | Markdown | [`docs/AI_change_loop.md`](file:///docs/AI_change_loop.md) |
-| **4** | **Architecture, Design & User Guide Documents** | Markdown | [`docs/Documentation.md`](file:///docs/Documentation.md) |
-| **5** | **Presentation Deck (Slide-by-Slide Outline)** | Markdown / Slide Deck | [`docs/Presentation_deck.md`](file:///docs/Presentation_deck.md) |
-| **6** | **Video Demonstration Guide (5-Minute Script & Storyboard)** | Markdown / Video Guide | [`docs/Video_demo_guide.md`](file:///docs/Video_demo_guide.md) |
-
----
 
 ## 🛠️ AI Tools Used (Ground Rules Compliance)
 
