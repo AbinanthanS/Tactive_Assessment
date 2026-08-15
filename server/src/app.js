@@ -10,7 +10,15 @@ const authenticate = require("./middleware/auth");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: "*",
+    exposedHeaders: [
+        "X-RateLimit-Limit",
+        "X-RateLimit-Remaining",
+        "X-RateLimit-Reset",
+        "Retry-After"
+    ]
+}));
 app.use(express.json());
 
 app.get("/health", (req, res) => {

@@ -1,4 +1,4 @@
-const { createApiKey, getApiKeys, revokeApiKey } = require("../services/apiKeyService");
+const { createApiKey, getApiKeys, revokeApiKey, getKeyStats } = require("../services/apiKeyService");
 
 async function create(req, res, next) {
     try {
@@ -59,8 +59,18 @@ async function revoke(req, res, next) {
     }
 }
 
+async function stats(req, res, next) {
+    try {
+        const result = await getKeyStats(req.user.id, req.params.id);
+        return res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     create,
     list,
-    revoke
+    revoke,
+    stats
 };
