@@ -81,9 +81,6 @@ describe("Rate limit service", () => {
             `,
             [apiKeyId]
         );
-
-        // Close PostgreSQL connection pool.
-        await pool.end();
     }, 30000);
 
     test(

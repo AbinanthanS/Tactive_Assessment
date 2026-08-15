@@ -17,13 +17,22 @@ async function registerUser(email, password) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const result = await pool.query(
-        `INSERT INTO users (email, password_hash)
-         VALUES ($1, $2)
-         RETURNING id, email, role, created_at`,
-        [normalizedEmail, passwordHash]
-    );
-    return result.rows[0];
+    try {
+        const result = await pool.query(
+            `INSERT INTO users (email, password_hash)
+             VALUES ($1, $2)
+             RETURNING id, email, role, created_at`,
+            [normalizedEmail, passwordHash]
+        );
+        return result.rows[0];
+    } catch (err) {
+        if (err.code === "23505") {
+            const error = new Error("Email is already registered");
+            error.statusCode = 409;
+            throw error;
+        }
+        throw err;
+    }
 }
 
 async function loginUser(email, password) {

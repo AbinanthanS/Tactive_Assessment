@@ -25,8 +25,8 @@ function hashApiKey(apiKey) {
         .digest("hex");
 }
 
-async function createApiKey(userId, name, plan) {
-    const normalizedPlan = plan.toUpperCase();
+async function createApiKey(userId, name, plan = "FREE") {
+    const normalizedPlan = (typeof plan === "string" ? plan : "FREE").toUpperCase();
 
     const planConfig = PLANS[normalizedPlan];
 
@@ -93,6 +93,13 @@ async function getApiKeys(userId) {
 }
 
 async function revokeApiKey(userId, apiKeyId) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(apiKeyId)) {
+        const error = new Error("Invalid API key ID");
+        error.statusCode = 400;
+        throw error;
+    }
+
     const result = await pool.query(
         `UPDATE api_keys
          SET status = 'DISABLED'

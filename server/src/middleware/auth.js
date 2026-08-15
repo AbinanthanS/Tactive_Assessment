@@ -9,13 +9,15 @@ function authenticate(req, res, next) {
         });
     }
 
-    const [scheme, token] = authHeader.split(" ");
+    const match = authHeader.match(/^Bearer\s+(\S+)$/i);
 
-    if (scheme !== "Bearer" || !token) {
+    if (!match) {
         return res.status(401).json({
             error: "Authorization header must use Bearer token"
         });
     }
+
+    const token = match[1];
 
     try {
         const payload = jwt.verify(
@@ -27,7 +29,7 @@ function authenticate(req, res, next) {
             id: payload.sub,
             role: payload.role
         };
-        
+
         next();
     } catch (error) {
         return res.status(401).json({

@@ -25,11 +25,7 @@ async function consumeRateLimit(apiKeyId, limit, windowSeconds) {
             )
             VALUES (
                 $1,
-                date_trunc('second', NOW())
-                    - (
-                        EXTRACT(EPOCH FROM NOW())::bigint
-                        % $2
-                    ) * INTERVAL '1 second',
+                to_timestamp(floor(extract(epoch from NOW()) / $2) * $2),
                 1
             )
             ON CONFLICT (api_key_id, window_start)
