@@ -70,7 +70,92 @@ any external caching layer (no Redis, no Memcached).
 │                     created_at                               │
 └──────────────────────────────────────────────────────────────┘
 ```
+flowchart TB
+    %% --- FRONTEND ---
+    subgraph Frontend ["🌐 Browser (localhost:5173)"]
+        direction TB
+        Nav["Navbar<br>(Auth state)"]
+        KeyMgmt["KeyManagement<br>(CRUD API Keys)"]
+        Playground["RateLimitPlayground<br>(Live Telemetry)"]
+    end
 
+    %% --- NETWORK ---
+    HTTP{{"HTTP Requests<br>(CORS + exposedHeaders)"}}
+
+    %% --- BACKEND ---
+    subgraph Backend ["⚙️ Express Server (localhost:5000)"]
+        direction TB
+        
+        %% Routes
+        AuthRoutes["/api/auth/register<br>/api/auth/login<br>/api/me"]
+        KeyRoutes["/api/keys<br>/api/keys/:id<br>/api/keys/:id/stats"]
+        DemoRoute["/api/demo"]
+        HealthRoute["/health"]
+
+        %% Middlewares
+        AuthMW{"[authenticate]<br>Verify JWT"}
+        KeyAuthMW{"[apiKeyAuth]<br>Verify X-API-Key"}
+        RateLimitMW{"[rateLimiter]<br>Check Limits"}
+
+        %% Services
+        AuthService["Auth Controller / Service"]
+        KeyService["API Key Service"]
+        DemoService["Demo Response"]
+        HealthResponse["200 OK"]
+
+        %% Backend Flow logic
+        AuthRoutes --> AuthMW
+        AuthMW -->|Pass| AuthService
+        AuthRoutes -.->|Login/Register bypass| AuthService
+
+        KeyRoutes --> AuthMW
+        AuthMW -->|Pass| KeyService
+
+        DemoRoute --> KeyAuthMW
+        KeyAuthMW -->|Pass| RateLimitMW
+        RateLimitMW -->|Pass| DemoService
+
+        HealthRoute --> HealthResponse
+    end
+
+    %% --- DATABASE ---
+    subgraph Database ["🗄️ PostgreSQL (Neon / node-postgres)"]
+        direction LR
+        UsersDB[("users<br>---<br>id (PK)<br>email<br>password_hash")]
+        KeysDB[("api_keys<br>---<br>id (PK)<br>user_id (FK)<br>key_hash<br>plan/limits")]
+        RateDB[("rate_limit_windows<br>---<br>(api_key_id, window_start) PK<br>request_count")]
+    end
+
+    %% --- CONNECTIONS ---
+    
+    %% Frontend to Network
+    Nav ==>|fetch() + JWT| HTTP
+    KeyMgmt ==>|fetch() + JWT| HTTP
+    Playground ==>|fetch() + X-API-Key| HTTP
+    
+    %% Network to Backend
+    HTTP --> AuthRoutes
+    HTTP --> KeyRoutes
+    HTTP --> DemoRoute
+    
+    %% Backend to Database
+    AuthService -->|SELECT / INSERT| UsersDB
+    KeyService -->|CRUD| KeysDB
+    
+    %% Auth MW checks users (optional depending on JWT strategy, but Keys MW definitely checks DB)
+    KeyAuthMW -->|SELECT key_hash| KeysDB
+    RateLimitMW -->|UPSERT / Increment| RateDB
+
+    %% Styling
+    classDef client fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+    classDef server fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#0f172a;
+    classDef db fill:#fef08a,stroke:#ca8a04,stroke-width:2px,color:#0f172a;
+    classDef network fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px,color:#0f172a,stroke-dasharray: 5 5;
+
+    class Frontend client;
+    class Backend server;
+    class Database db;
+    class HTTP network;
 ---
 
 ## Database Schema
