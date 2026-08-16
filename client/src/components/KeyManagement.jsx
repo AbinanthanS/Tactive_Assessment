@@ -28,48 +28,48 @@ export default function KeyManagement({ keys, loading, onRefresh, onOpenCreate, 
   const proCount = keys.filter(k => k.plan === "PRO").length;
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 24px" }}>
+    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 20px" }}>
       {/* Top Banner / Metrics */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px", marginBottom: "28px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px", marginBottom: "20px" }}>
         {/* Metric 1 */}
-        <div className="glass-panel" style={{ padding: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: 600 }}>Active API Keys</span>
-            <div style={{ padding: "8px", borderRadius: "8px", background: "rgba(99, 102, 241, 0.15)" }}>
-              <Key size={18} color="var(--accent-primary)" />
+        <div className="glass-panel" style={{ padding: "16px 20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: 500 }}>Active API Keys</span>
+            <div style={{ padding: "6px", borderRadius: "var(--radius-sm)", background: "var(--bg-tertiary)" }}>
+              <Key size={16} color="var(--accent-primary)" />
             </div>
           </div>
-          <div style={{ fontSize: "1.8rem", fontWeight: 800 }}>{activeCount}</div>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "4px" }}>
-            Provisioned on PostgreSQL cluster
+          <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>{activeCount}</div>
+          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "2px" }}>
+            PostgreSQL provisioned
           </p>
         </div>
 
         {/* Metric 2 */}
-        <div className="glass-panel" style={{ padding: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: 600 }}>Pro Tier Quotas</span>
-            <div style={{ padding: "8px", borderRadius: "8px", background: "rgba(217, 70, 239, 0.15)" }}>
-              <Shield size={18} color="#d946ef" />
+        <div className="glass-panel" style={{ padding: "16px 20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: 500 }}>Pro Tier Quotas</span>
+            <div style={{ padding: "6px", borderRadius: "var(--radius-sm)", background: "var(--bg-tertiary)" }}>
+              <Shield size={16} color="var(--accent-primary)" />
             </div>
           </div>
-          <div style={{ fontSize: "1.8rem", fontWeight: 800 }}>{proCount}</div>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "4px" }}>
-            1,000 requests/min capacity
+          <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>{proCount}</div>
+          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "2px" }}>
+            1,000 req/min capacity
           </p>
         </div>
 
         {/* Metric 3 */}
-        <div className="glass-panel" style={{ padding: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: 600 }}>Rate Guard Strategy</span>
-            <div style={{ padding: "8px", borderRadius: "8px", background: "rgba(16, 185, 129, 0.15)" }}>
-              <CheckCircle2 size={18} color="var(--status-success)" />
+        <div className="glass-panel" style={{ padding: "16px 20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: 500 }}>Engine Strategy</span>
+            <div style={{ padding: "6px", borderRadius: "var(--radius-sm)", background: "var(--bg-tertiary)" }}>
+              <CheckCircle2 size={16} color="var(--status-success-text)" />
             </div>
           </div>
-          <div style={{ fontSize: "1.2rem", fontWeight: 800, marginTop: "6px" }}>Atomic Fixed Window</div>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "4px" }}>
-            Epoch bucket alignment
+          <div style={{ fontSize: "1.1rem", fontWeight: 600, marginTop: "4px" }}>Atomic Fixed Window</div>
+          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "2px" }}>
+            Epoch alignment
           </p>
         </div>
       </div>
@@ -81,13 +81,13 @@ export default function KeyManagement({ keys, loading, onRefresh, onOpenCreate, 
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "20px 24px",
+          padding: "16px 20px",
           borderBottom: "1px solid var(--border-subtle)",
           flexWrap: "wrap",
-          gap: "16px"
+          gap: "12px"
         }}>
           <div>
-            <h2 style={{ fontSize: "1.25rem", marginBottom: "2px" }}>API Credentials</h2>
+            <h2 style={{ fontSize: "1.1rem", marginBottom: "2px" }}>API Credentials</h2>
             <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
               Keys authenticate client requests to protected endpoints
             </p>

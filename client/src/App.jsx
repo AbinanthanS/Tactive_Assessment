@@ -85,79 +85,75 @@ function DashboardContent() {
       <main style={{ flex: 1 }}>
         {!user ? (
           /* Unauthenticated Landing / Demo Hero */
-          <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "64px 24px", textAlign: "center" }}>
+          <div style={{ maxWidth: "800px", margin: "0 auto", padding: "64px 24px", textAlign: "center" }}>
             <div style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "8px",
-              padding: "6px 16px",
+              gap: "6px",
+              padding: "4px 12px",
               borderRadius: "var(--radius-full)",
-              background: "rgba(99, 102, 241, 0.1)",
-              border: "1px solid rgba(99, 102, 241, 0.3)",
-              color: "var(--accent-primary)",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              marginBottom: "24px"
+              background: "var(--bg-tertiary)",
+              border: "1px solid var(--border-subtle)",
+              color: "var(--text-secondary)",
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              marginBottom: "20px"
             }}>
-              <Zap size={15} />
-              Atomic PostgreSQL Fixed Window Rate Limiting
+              <Zap size={14} color="var(--accent-primary)" />
+              PostgreSQL Atomic Fixed-Window Rate Limiter
             </div>
 
-            <h1 style={{ fontSize: "3.2rem", lineHeight: 1.15, marginBottom: "20px" }}>
-              Enterprise API Security & <br />
-              <span className="gradient-text">Precision Rate Limiting</span>
+            <h1 style={{ fontSize: "2.5rem", lineHeight: 1.2, marginBottom: "16px" }}>
+              API Gateway & Rate Limiting Platform
             </h1>
 
-            <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", maxWidth: "680px", margin: "0 auto 36px", lineHeight: "1.6" }}>
-              RateGuard protects your backend APIs against bursts, DDoS, and quota overages with microsecond precision, cryptographic SHA-256 key hashing, and RFC-compliant response headers.
+            <p style={{ fontSize: "1rem", color: "var(--text-secondary)", maxWidth: "600px", margin: "0 auto 32px", lineHeight: "1.6" }}>
+              Protect backend services against traffic spikes with atomic in-database rate limiting, cryptographic SHA-256 key management, and standard RFC 6585 headers.
             </p>
 
-            <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap", marginBottom: "64px" }}>
-              <button onClick={() => setIsAuthOpen(true)} className="btn btn-primary btn-lg">
-                <Lock size={18} />
+            <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap", marginBottom: "48px" }}>
+              <button onClick={() => setIsAuthOpen(true)} className="btn btn-primary">
+                <Lock size={16} />
                 Get Started / Sign In
               </button>
               <button
-                onClick={() => {
-                  setActiveTab("playground");
-                  // Allow trying playground with a dummy or test key
-                }}
-                className="btn btn-secondary btn-lg"
+                onClick={() => setActiveTab("playground")}
+                className="btn btn-secondary"
               >
-                <Activity size={18} />
-                Explore Rate Limit Simulator
+                <Activity size={16} />
+                Open Simulator
               </button>
             </div>
 
             {/* Feature Highlights Grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", textAlign: "left" }}>
-              <div className="glass-panel" style={{ padding: "24px" }}>
-                <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "rgba(99, 102, 241, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
-                  <Shield size={22} color="var(--accent-primary)" />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", textAlign: "left" }}>
+              <div className="glass-panel" style={{ padding: "20px" }}>
+                <div style={{ width: "36px", height: "36px", borderRadius: "var(--radius-sm)", background: "var(--bg-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px" }}>
+                  <Shield size={18} color="var(--accent-primary)" />
                 </div>
-                <h3 style={{ fontSize: "1.15rem", marginBottom: "6px" }}>SHA-256 Key Hashing</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                  Zero raw API key storage. Raw keys are presented only once at creation and cryptographically hashed with SHA-256 in the database.
+                <h3 style={{ fontSize: "1rem", marginBottom: "4px" }}>SHA-256 Key Hashing</h3>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                  Zero raw key storage. Secrets are displayed once and stored strictly as SHA-256 hashes in PostgreSQL.
                 </p>
               </div>
 
-              <div className="glass-panel" style={{ padding: "24px" }}>
-                <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "rgba(6, 182, 212, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
-                  <Zap size={22} color="#06b6d4" />
+              <div className="glass-panel" style={{ padding: "20px" }}>
+                <div style={{ width: "36px", height: "36px", borderRadius: "var(--radius-sm)", background: "var(--bg-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px" }}>
+                  <Zap size={18} color="var(--accent-primary)" />
                 </div>
-                <h3 style={{ fontSize: "1.15rem", marginBottom: "6px" }}>Atomic Upsert Windows</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                  PostgreSQL transaction-isolated <code>ON CONFLICT DO UPDATE</code> engine with epoch mathematical alignment eliminates race conditions.
+                <h3 style={{ fontSize: "1rem", marginBottom: "4px" }}>Atomic Window Engine</h3>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                  High-concurrency <code>ON CONFLICT DO UPDATE</code> upserts guarantee precision counter tracking.
                 </p>
               </div>
 
-              <div className="glass-panel" style={{ padding: "24px" }}>
-                <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "rgba(217, 70, 239, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
-                  <Key size={22} color="#d946ef" />
+              <div className="glass-panel" style={{ padding: "20px" }}>
+                <div style={{ width: "36px", height: "36px", borderRadius: "var(--radius-sm)", background: "var(--bg-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px" }}>
+                  <Key size={18} color="var(--accent-primary)" />
                 </div>
-                <h3 style={{ fontSize: "1.15rem", marginBottom: "6px" }}>Tiered Quotas</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                  Dynamic policy enforcement for Free (100 req/60s) and Pro (1000 req/60s) tiers with automatic <code>429</code> throttling.
+                <h3 style={{ fontSize: "1rem", marginBottom: "4px" }}>Tiered Quotas</h3>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                  Flexible policy controls for Free (100 req/min) and Pro (1,000 req/min) with instant 429 throttling.
                 </p>
               </div>
             </div>

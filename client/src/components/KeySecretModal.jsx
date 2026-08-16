@@ -1,24 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Copy, Check, AlertTriangle, ShieldCheck, ArrowRight } from "lucide-react";
-import confetti from "canvas-confetti";
 import { useAuth } from "../context/AuthContext";
 
 export default function KeySecretModal({ apiKeyData, onClose, onGoToPlayground }) {
   const { addToast } = useAuth();
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    // Trigger celebratory confetti on key creation
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 }
-      });
-    } catch (e) {
-      // Ignore if confetti fails
-    }
-  }, []);
 
   if (!apiKeyData) return null;
 
@@ -31,26 +17,27 @@ export default function KeySecretModal({ apiKeyData, onClose, onGoToPlayground }
 
   return (
     <div className="modal-backdrop">
-      <div className="modal-content" style={{ maxWidth: "560px" }}>
+      <div className="modal-content" style={{ maxWidth: "520px" }}>
+        {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <div style={{
-            width: "52px",
-            height: "52px",
-            borderRadius: "14px",
-            background: "var(--accent-gradient-emerald)",
+            width: "44px",
+            height: "44px",
+            borderRadius: "var(--radius-md)",
+            background: "var(--status-success-bg)",
+            border: "1px solid var(--status-success-border)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: "12px",
-            boxShadow: "var(--shadow-glow-emerald)"
+            marginBottom: "12px"
           }}>
-            <ShieldCheck size={28} color="#fff" />
+            <ShieldCheck size={24} color="var(--status-success-text)" />
           </div>
-          <h2 style={{ fontSize: "1.45rem", marginBottom: "4px" }}>
+          <h2 style={{ fontSize: "1.3rem", marginBottom: "4px" }}>
             API Key Generated
           </h2>
           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-            For key <strong style={{ color: "var(--text-primary)" }}>{apiKeyData.name}</strong> ({apiKeyData.plan} Tier)
+            Key: <strong style={{ color: "var(--text-primary)" }}>{apiKeyData.name}</strong> ({apiKeyData.plan} Tier)
           </p>
         </div>
 
@@ -58,37 +45,36 @@ export default function KeySecretModal({ apiKeyData, onClose, onGoToPlayground }
         <div style={{
           display: "flex",
           alignItems: "flex-start",
-          gap: "12px",
-          padding: "14px",
+          gap: "10px",
+          padding: "12px",
           background: "var(--status-warning-bg)",
           border: "1px solid var(--status-warning-border)",
           borderRadius: "var(--radius-md)",
-          marginBottom: "20px"
+          marginBottom: "18px"
         }}>
-          <AlertTriangle size={20} color="var(--status-warning)" style={{ flexShrink: 0, marginTop: "2px" }} />
-          <div style={{ fontSize: "0.82rem", color: "#fcd34d", lineHeight: "1.4" }}>
-            <strong>Save this key immediately!</strong> For security, this secret token is only displayed once and cannot be recovered later.
+          <AlertTriangle size={18} color="var(--status-warning-text)" style={{ flexShrink: 0, marginTop: "2px" }} />
+          <div style={{ fontSize: "0.8rem", color: "var(--status-warning-text)", lineHeight: "1.4" }}>
+            <strong>Save this key now.</strong> For security, this secret token is only displayed once and cannot be recovered later.
           </div>
         </div>
 
         {/* API Key Box with 1-Click Copy */}
-        <div style={{ marginBottom: "24px" }}>
-          <label className="input-label" style={{ marginBottom: "8px", display: "block" }}>
-            Raw API Secret Key:
+        <div style={{ marginBottom: "20px" }}>
+          <label className="input-label" style={{ marginBottom: "6px", display: "block" }}>
+            Secret Token:
           </label>
           <div style={{
             display: "flex",
             alignItems: "center",
-            background: "rgba(0, 0, 0, 0.4)",
-            border: "1px solid var(--border-glow)",
+            background: "var(--bg-primary)",
+            border: "1px solid var(--border-subtle)",
             borderRadius: "var(--radius-md)",
-            padding: "8px 12px",
-            boxShadow: "inset 0 2px 4px rgba(0,0,0,0.5)"
+            padding: "8px 12px"
           }}>
             <code style={{
               fontFamily: "var(--font-mono)",
               fontSize: "0.85rem",
-              color: "#38bdf8",
+              color: "var(--accent-primary)",
               flex: 1,
               overflowX: "auto",
               padding: "4px",
@@ -103,13 +89,13 @@ export default function KeySecretModal({ apiKeyData, onClose, onGoToPlayground }
             >
               {copied ? (
                 <>
-                  <Check size={14} color="var(--status-success)" />
-                  Copied!
+                  <Check size={14} color="var(--status-success-text)" />
+                  Copied
                 </>
               ) : (
                 <>
                   <Copy size={14} />
-                  Copy Key
+                  Copy
                 </>
               )}
             </button>
@@ -117,8 +103,8 @@ export default function KeySecretModal({ apiKeyData, onClose, onGoToPlayground }
         </div>
 
         {/* Modal Actions */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-subtle)", paddingTop: "18px" }}>
-          <button onClick={onClose} className="btn btn-secondary">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-subtle)", paddingTop: "16px" }}>
+          <button onClick={onClose} className="btn btn-secondary btn-sm">
             Done & Close
           </button>
           <button
@@ -126,10 +112,10 @@ export default function KeySecretModal({ apiKeyData, onClose, onGoToPlayground }
               onClose();
               if (onGoToPlayground) onGoToPlayground(apiKeyData.apiKey);
             }}
-            className="btn btn-primary"
+            className="btn btn-primary btn-sm"
           >
-            Test in Live Playground
-            <ArrowRight size={16} />
+            Open in Playground
+            <ArrowRight size={14} />
           </button>
         </div>
       </div>
