@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Key, Trash2, Shield, Calendar, RefreshCw, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, Key, Trash2, Shield, Calendar, RefreshCw, AlertCircle, CheckCircle2, Zap } from "lucide-react";
 import { keysApi } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -204,15 +204,32 @@ export default function KeyManagement({ keys, loading, onRefresh, onOpenCreate, 
                       {/* Actions */}
                       <td style={{ padding: "16px 24px", textAlign: "right" }}>
                         {isActive && (
-                          <button
-                            onClick={() => setConfirmRevokeKey(key)}
-                            className="btn btn-danger btn-sm"
-                            title="Revoke Key"
-                            style={{ padding: "6px 10px" }}
-                          >
-                            <Trash2 size={14} />
-                            Revoke
-                          </button>
+                          <div style={{ display: "inline-flex", gap: "8px" }}>
+                            <button
+                              onClick={() => {
+                                const cached = JSON.parse(localStorage.getItem("rg_cached_secrets") || "{}");
+                                const secret = cached[key.id] || "";
+                                if (onSelectKeyForPlayground) {
+                                  onSelectKeyForPlayground(secret);
+                                }
+                              }}
+                              className="btn btn-secondary btn-sm"
+                              title="Test this key in Live Playground"
+                              style={{ padding: "6px 10px", borderColor: "rgba(99, 102, 241, 0.3)" }}
+                            >
+                              <Zap size={14} color="var(--accent-primary)" />
+                              Test
+                            </button>
+                            <button
+                              onClick={() => setConfirmRevokeKey(key)}
+                              className="btn btn-danger btn-sm"
+                              title="Revoke Key"
+                              style={{ padding: "6px 10px" }}
+                            >
+                              <Trash2 size={14} />
+                              Revoke
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>

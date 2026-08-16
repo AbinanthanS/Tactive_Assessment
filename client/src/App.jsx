@@ -46,6 +46,15 @@ function DashboardContent() {
   const handleKeyCreated = (newKeyData) => {
     setIsCreateOpen(false);
     setCreatedSecretData(newKeyData);
+    if (newKeyData?.id && newKeyData?.apiKey) {
+      try {
+        const stored = JSON.parse(localStorage.getItem("rg_cached_secrets") || "{}");
+        stored[newKeyData.id] = newKeyData.apiKey;
+        localStorage.setItem("rg_cached_secrets", JSON.stringify(stored));
+      } catch (e) {
+        console.error("Failed to cache key secret", e);
+      }
+    }
     fetchKeys();
   };
 

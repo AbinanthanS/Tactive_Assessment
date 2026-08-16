@@ -93,7 +93,7 @@ describe("Rate limit service", () => {
                     await consumeRateLimit(
                         apiKeyId,
                         3,
-                        60
+                        300
                     )
                 );
             }

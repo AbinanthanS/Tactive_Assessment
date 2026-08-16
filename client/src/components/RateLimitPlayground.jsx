@@ -20,12 +20,67 @@ export default function RateLimitPlayground({ keys, initialApiKey }) {
 
   const [secondsUntilReset, setSecondsUntilReset] = useState(null);
 
+  const [selectedKeyId, setSelectedKeyId] = useState("");
+  const [cachedSecrets, setCachedSecrets] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("rg_cached_secrets") || "{}");
+    } catch {
+      return {};
+    }
+  });
+
   // Update input if initialApiKey changes
   useEffect(() => {
     if (initialApiKey) {
       setApiKeyInput(initialApiKey);
+      // If matches any key in keys, select it
+      const matchingKey = keys?.find((k) => cachedSecrets[k.id] === initialApiKey);
+      if (matchingKey) {
+        setSelectedKeyId(matchingKey.id);
+      }
     }
-  }, [initialApiKey]);
+  }, [initialApiKey, keys, cachedSecrets]);
+
+  // Load / sync cached secrets when keys change
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("rg_cached_secrets") || "{}");
+      setCachedSecrets(stored);
+    } catch {
+      // ignore
+    }
+  }, [keys]);
+
+  const handleSelectKey = (e) => {
+    const keyId = e.target.value;
+    setSelectedKeyId(keyId);
+    if (!keyId) return;
+
+    const foundKey = keys?.find((k) => k.id === keyId);
+    const secret = cachedSecrets[keyId];
+
+    if (secret) {
+      setApiKeyInput(secret);
+      addToast(`Selected "${foundKey?.name || "Key"}" (${foundKey?.plan || ""})`, "success");
+    } else {
+      setApiKeyInput("");
+      addToast(`Selected "${foundKey?.name || "Key"}". Please paste its secret key.`, "info");
+    }
+  };
+
+  const handleApiKeyInputChange = (value) => {
+    setApiKeyInput(value);
+    // If a key is selected or matches, save to cache
+    if (selectedKeyId && value.trim().startsWith("rg_live_")) {
+      try {
+        const updated = { ...cachedSecrets, [selectedKeyId]: value.trim() };
+        setCachedSecrets(updated);
+        localStorage.setItem("rg_cached_secrets", JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+    }
+  };
 
   // Reset countdown clock
   useEffect(() => {
@@ -152,30 +207,40 @@ export default function RateLimitPlayground({ keys, initialApiKey }) {
                 <select
                   className="input-field"
                   style={{ marginTop: "4px", background: "var(--bg-tertiary)", cursor: "pointer" }}
-                  onChange={(e) => {
-                    if (e.target.value) setApiKeyInput(e.target.value);
-                  }}
-                  defaultValue=""
+                  value={selectedKeyId}
+                  onChange={handleSelectKey}
                 >
-                  <option value="" disabled>-- Select a key from your account --</option>
-                  {keys.map((k) => (
-                    <option key={k.id} value={k.apiKey || ""}>
-                      {k.name} ({k.plan} - {k.requests_per_window} req/{k.window_seconds}s)
-                    </option>
-                  ))}
+                  <option value="">-- Select a key from your account --</option>
+                  {keys.map((k) => {
+                    const hasSecret = Boolean(cachedSecrets[k.id]);
+                    return (
+                      <option key={k.id} value={k.id}>
+                        {k.name} ({k.plan} — {k.requests_per_window} req/{k.window_seconds}s){hasSecret ? " ✓" : ""}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
             )}
 
             {/* Custom/Raw API Key Input */}
             <div className="input-group" style={{ marginBottom: 0 }}>
-              <label className="input-label">API Key Secret (Header: <code>X-API-Key</code>):</label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                <label className="input-label" style={{ margin: 0 }}>
+                  API Key Secret (Header: <code>X-API-Key</code>):
+                </label>
+                {selectedKeyId && cachedSecrets[selectedKeyId] && (
+                  <span style={{ fontSize: "0.75rem", color: "var(--status-success)", fontWeight: 600 }}>
+                    ✓ Loaded from session
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
                 className="input-field"
                 placeholder="rg_live_..."
                 value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
+                onChange={(e) => handleApiKeyInputChange(e.target.value)}
                 style={{ fontFamily: "var(--font-mono)", fontSize: "0.85rem" }}
               />
             </div>
