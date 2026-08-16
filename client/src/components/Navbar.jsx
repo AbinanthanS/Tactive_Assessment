@@ -27,9 +27,8 @@ export default function Navbar({ onOpenAuth, activeTab, setActiveTab }) {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      padding: "16px 32px",
-      background: "rgba(11, 15, 26, 0.8)",
-      backdropFilter: "blur(20px)",
+      padding: "14px 28px",
+      background: "#0d0d0d",
       borderBottom: "1px solid var(--border-subtle)",
       position: "sticky",
       top: 0,
@@ -38,29 +37,27 @@ export default function Navbar({ onOpenAuth, activeTab, setActiveTab }) {
       {/* Brand / Logo */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <div style={{
-          width: "40px",
-          height: "40px",
-          borderRadius: "10px",
-          background: "var(--accent-gradient)",
+          width: "36px",
+          height: "36px",
+          borderRadius: "8px",
+          background: "#1e1e2e",
+          border: "1px solid rgba(99,102,241,0.3)",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 0 20px rgba(99, 102, 241, 0.4)"
+          justifyContent: "center"
         }}>
-          <Shield size={22} color="#ffffff" />
+          <Shield size={18} color="#818cf8" />
         </div>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{
               fontFamily: "var(--font-display)",
-              fontSize: "1.25rem",
-              fontWeight: 800,
-              letterSpacing: "-0.03em"
+              fontSize: "1.15rem",
+              fontWeight: 600,
+              letterSpacing: "-0.02em",
+              color: "var(--text-primary)"
             }}>
               Rate<span className="gradient-text">Guard</span>
-            </span>
-            <span className="badge badge-pro" style={{ fontSize: "0.65rem", padding: "2px 8px" }}>
-              v1.0
             </span>
           </div>
           <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "-2px" }}>
@@ -145,15 +142,12 @@ export default function Navbar({ onOpenAuth, activeTab, setActiveTab }) {
               gap: "8px",
               padding: "6px 12px",
               borderRadius: "var(--radius-md)",
-              background: "rgba(99, 102, 241, 0.1)",
-              border: "1px solid rgba(99, 102, 241, 0.25)"
+              background: "var(--bg-tertiary)",
+              border: "1px solid var(--border-subtle)"
             }}>
-              <User size={14} color="var(--accent-primary)" />
-              <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>
+              <User size={14} color="var(--text-muted)" />
+              <span style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>
                 {user.email ? user.email.split("@")[0] : "Developer"}
-              </span>
-              <span className="badge badge-free" style={{ fontSize: "0.6rem", padding: "1px 6px" }}>
-                {user.role}
               </span>
             </div>
             <button

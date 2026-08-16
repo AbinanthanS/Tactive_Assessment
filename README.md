@@ -154,10 +154,4 @@ The `GET /api/keys/:id/stats` endpoint was developed through an autonomous 4-ste
 
 Detailed prompt logs and diffs are in [`docs/AI_change_loop.md`](docs/AI_change_loop.md).
 
----
 
-## 📚 Documentation Index
-
-- [Architecture, Design & User Guide](docs/Documentation.md) — System design, schema, algorithm, and UI walkthrough.
-- [Test Automation & Red Run Evidence](docs/Test_evidence.md) — Test matrix, green run logs, and deliberate failure evidence.
-- [AI Change Loop Evidence Log](docs/AI_change_loop.md) — 4-iteration self-correction cycle for the telemetry feature.
