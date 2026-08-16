@@ -169,44 +169,44 @@ export default function RateLimitPlayground({ keys, initialApiKey }) {
   const isRateLimited = metrics.lastStatus === 429 || remaining === 0;
 
   const meterColor = isRateLimited
-    ? "var(--status-error-text)"
+    ? "var(--status-error)"
     : percentUsed > 75
-      ? "var(--status-warning-text)"
-      : "var(--status-success-text)";
+      ? "var(--status-warning)"
+      : "var(--status-success)";
 
   return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 20px" }}>
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 24px" }}>
       {/* Top Header */}
-      <div style={{ marginBottom: "24px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-          <h1 style={{ fontSize: "1.5rem" }}>Rate Limit Simulator</h1>
-          <span className="badge badge-free" style={{ fontSize: "0.7rem" }}>
-            Live
+      <div style={{ marginBottom: "28px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+          <h1 style={{ fontSize: "1.75rem" }}>Rate Limit Simulator</h1>
+          <span className="badge badge-pro" style={{ fontSize: "0.7rem" }}>
+            Live Telemetry
           </span>
         </div>
-        <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-          Simulate traffic bursts against the atomic PostgreSQL rate limiting engine.
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+          Test high-concurrency rate limiting against the PostgreSQL atomic window algorithm.
         </p>
       </div>
 
       {/* Grid Layout: Left Controls + Gauges, Right Request Console */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "20px", alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "24px", alignItems: "start" }}>
         {/* Left Column: API Key & Playground Controls */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {/* API Key Configuration Card */}
-          <div className="glass-panel" style={{ padding: "20px" }}>
-            <h3 style={{ fontSize: "1rem", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <Key size={16} color="var(--accent-primary)" />
-              Target API Key
+          <div className="glass-panel" style={{ padding: "24px" }}>
+            <h3 style={{ fontSize: "1.1rem", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+              <Key size={18} color="var(--accent-primary)" />
+              Select Target API Key
             </h3>
 
             {/* Selector dropdown if user has keys */}
             {keys && keys.length > 0 && (
               <div style={{ marginBottom: "12px" }}>
-                <label className="input-label">Saved Keys:</label>
+                <label className="input-label">Saved Active Keys:</label>
                 <select
                   className="input-field"
-                  style={{ marginTop: "4px", cursor: "pointer" }}
+                  style={{ marginTop: "4px", background: "var(--bg-tertiary)", cursor: "pointer" }}
                   value={selectedKeyId}
                   onChange={handleSelectKey}
                 >
@@ -230,8 +230,8 @@ export default function RateLimitPlayground({ keys, initialApiKey }) {
                   API Key Secret (Header: <code>X-API-Key</code>):
                 </label>
                 {selectedKeyId && cachedSecrets[selectedKeyId] && (
-                  <span style={{ fontSize: "0.75rem", color: "var(--status-success-text)", fontWeight: 500 }}>
-                    ✓ Loaded
+                  <span style={{ fontSize: "0.75rem", color: "var(--status-success)", fontWeight: 600 }}>
+                    ✓ Loaded from session
                   </span>
                 )}
               </div>
@@ -247,22 +247,22 @@ export default function RateLimitPlayground({ keys, initialApiKey }) {
           </div>
 
           {/* Trigger Actions Card */}
-          <div className="glass-panel" style={{ padding: "20px" }}>
-            <h3 style={{ fontSize: "1rem", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <Zap size={16} color="var(--accent-primary)" />
+          <div className="glass-panel" style={{ padding: "24px" }}>
+            <h3 style={{ fontSize: "1.1rem", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+              <Zap size={18} color="var(--accent-secondary)" />
               Simulation Triggers
             </h3>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
               {/* Single Request */}
               <button
                 onClick={() => fireRequests(1)}
                 disabled={loading}
                 className="btn btn-primary"
-                style={{ padding: "10px 8px", flexDirection: "column", gap: "4px" }}
+                style={{ padding: "14px 10px", flexDirection: "column", gap: "6px" }}
               >
-                <Play size={16} />
-                <span style={{ fontSize: "0.8rem" }}>Single (1x)</span>
+                <Play size={20} />
+                <span style={{ fontSize: "0.85rem" }}>Single (1x)</span>
               </button>
 
               {/* Burst 5 */}
@@ -270,43 +270,44 @@ export default function RateLimitPlayground({ keys, initialApiKey }) {
                 onClick={() => fireRequests(5)}
                 disabled={loading}
                 className="btn btn-secondary"
-                style={{ padding: "10px 8px", flexDirection: "column", gap: "4px" }}
+                style={{ padding: "14px 10px", flexDirection: "column", gap: "6px", borderColor: "rgba(6, 182, 212, 0.4)" }}
               >
-                <Zap size={16} />
-                <span style={{ fontSize: "0.8rem" }}>Burst (5x)</span>
+                <Zap size={20} color="#06b6d4" />
+                <span style={{ fontSize: "0.85rem", color: "#06b6d4" }}>Burst (5x)</span>
               </button>
 
               {/* Spam 15 */}
               <button
                 onClick={() => fireRequests(15)}
                 disabled={loading}
-                className="btn btn-secondary"
-                style={{ padding: "10px 8px", flexDirection: "column", gap: "4px" }}
+                className="btn btn-danger"
+                style={{ padding: "14px 10px", flexDirection: "column", gap: "6px" }}
               >
-                <Flame size={16} />
-                <span style={{ fontSize: "0.8rem" }}>Spam (15x)</span>
+                <Flame size={20} />
+                <span style={{ fontSize: "0.85rem" }}>Spam (15x)</span>
               </button>
             </div>
           </div>
 
           {/* Live Telemetry Meter Card */}
-          <div className="glass-panel" style={{ padding: "20px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-              <h3 style={{ fontSize: "1rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                <Clock size={16} color="var(--accent-primary)" />
-                Telemetry & Quota
+          <div className={`glass-panel ${isRateLimited ? "toast-error" : ""}`} style={{ padding: "24px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ fontSize: "1.1rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                <Clock size={18} color="var(--accent-primary)" />
+                Quota & Window Telemetry
               </h3>
 
               {/* Status Badge */}
               <span
                 style={{
-                  padding: "3px 10px",
+                  padding: "4px 12px",
                   borderRadius: "var(--radius-full)",
                   fontSize: "0.75rem",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   background: isRateLimited ? "var(--status-error-bg)" : "var(--status-success-bg)",
-                  color: isRateLimited ? "var(--status-error-text)" : "var(--status-success-text)",
-                  border: `1px solid ${isRateLimited ? "var(--status-error-border)" : "var(--status-success-border)"}`
+                  color: isRateLimited ? "var(--status-error)" : "var(--status-success)",
+                  border: `1px solid ${isRateLimited ? "var(--status-error-border)" : "var(--status-success-border)"}`,
+                  boxShadow: isRateLimited ? "var(--shadow-glow-rose)" : "var(--shadow-glow-emerald)"
                 }}
               >
                 {isRateLimited ? "429 RATE LIMITED" : "200 QUOTA HEALTHY"}
@@ -314,42 +315,44 @@ export default function RateLimitPlayground({ keys, initialApiKey }) {
             </div>
 
             {/* Quota Progress Bar */}
-            <div style={{ marginBottom: "16px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "6px" }}>
+            <div style={{ marginBottom: "18px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "6px" }}>
                 <span style={{ color: "var(--text-secondary)" }}>Consumed Window Quota:</span>
-                <span style={{ fontWeight: 600, fontFamily: "var(--font-mono)" }}>
+                <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)" }}>
                   {consumed} / {limit} reqs ({percentUsed}%)
                 </span>
               </div>
               <div style={{
-                height: "8px",
-                background: "var(--bg-primary)",
+                height: "12px",
+                background: "rgba(0, 0, 0, 0.4)",
                 borderRadius: "var(--radius-full)",
                 overflow: "hidden",
-                border: "1px solid var(--border-subtle)"
+                border: "1px solid var(--border-subtle)",
+                padding: "2px"
               }}>
                 <div style={{
                   height: "100%",
                   width: `${percentUsed}%`,
                   background: meterColor,
                   borderRadius: "var(--radius-full)",
-                  transition: "width 0.2s ease"
+                  transition: "all 0.3s ease",
+                  boxShadow: `0 0 10px ${meterColor}80`
                 }} />
               </div>
             </div>
 
             {/* Telemetry Stats Grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-              <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--bg-primary)", border: "1px solid var(--border-subtle)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              <div style={{ padding: "12px", borderRadius: "var(--radius-md)", background: "var(--bg-glass-input)", border: "1px solid var(--border-subtle)" }}>
                 <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "2px" }}>Remaining Capacity</div>
-                <div style={{ fontSize: "1.25rem", fontWeight: 700, color: meterColor, fontFamily: "var(--font-mono)" }}>
-                  {remaining} <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>reqs</span>
+                <div style={{ fontSize: "1.4rem", fontWeight: 800, color: meterColor, fontFamily: "var(--font-mono)" }}>
+                  {remaining} <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>reqs</span>
                 </div>
               </div>
 
-              <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--bg-primary)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ padding: "12px", borderRadius: "var(--radius-md)", background: "var(--bg-glass-input)", border: "1px solid var(--border-subtle)" }}>
                 <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "2px" }}>Window Reset In</div>
-                <div style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>
+                <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>
                   {secondsUntilReset !== null ? `${secondsUntilReset}s` : "60s"}
                 </div>
               </div>

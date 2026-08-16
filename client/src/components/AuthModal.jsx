@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
+import { X, Lock, Mail, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 import { authApi } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -59,13 +59,14 @@ export default function AuthModal({ isOpen, onClose }) {
           onClick={onClose}
           style={{
             position: "absolute",
-            top: "16px",
-            right: "16px",
-            background: "transparent",
-            border: "none",
+            top: "20px",
+            right: "20px",
+            background: "rgba(255, 255, 255, 0.05)",
+            border: "1px solid var(--border-subtle)",
+            borderRadius: "var(--radius-sm)",
             color: "var(--text-muted)",
             cursor: "pointer",
-            padding: "4px",
+            padding: "6px",
             display: "flex",
             alignItems: "center"
           }}
@@ -74,37 +75,37 @@ export default function AuthModal({ isOpen, onClose }) {
         </button>
 
         {/* Modal Header */}
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
           <div style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "var(--radius-sm)",
-            background: "var(--bg-tertiary)",
-            border: "1px solid var(--border-subtle)",
+            width: "48px",
+            height: "48px",
+            borderRadius: "12px",
+            background: "var(--accent-gradient)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: "10px"
+            marginBottom: "12px",
+            boxShadow: "0 0 25px rgba(99, 102, 241, 0.4)"
           }}>
-            <ShieldCheck size={20} color="var(--accent-primary)" />
+            <ShieldCheck size={26} color="#fff" />
           </div>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "4px" }}>
-            {isLogin ? "Sign In" : "Create Account"}
+          <h2 style={{ fontSize: "1.5rem", marginBottom: "6px" }}>
+            {isLogin ? "Welcome Back" : "Create RateGuard Account"}
           </h2>
           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
             {isLogin
-              ? "Access your API keys and rate limit telemetry"
-              : "Register to manage API credentials and quotas"}
+              ? "Sign in to manage your API keys and inspect rate limit telemetry"
+              : "Register to provision API keys with custom rate-limiting policies"}
           </p>
         </div>
 
         {/* Tab Switcher */}
         <div style={{
           display: "flex",
-          background: "var(--bg-primary)",
-          padding: "3px",
+          background: "var(--bg-glass-input)",
+          padding: "4px",
           borderRadius: "var(--radius-md)",
-          marginBottom: "16px",
+          marginBottom: "20px",
           border: "1px solid var(--border-subtle)"
         }}>
           <button
@@ -112,15 +113,15 @@ export default function AuthModal({ isOpen, onClose }) {
             onClick={() => { setIsLogin(true); setError(""); }}
             style={{
               flex: 1,
-              padding: "6px",
+              padding: "8px",
               borderRadius: "var(--radius-sm)",
               border: "none",
               background: isLogin ? "var(--bg-tertiary)" : "transparent",
-              color: isLogin ? "var(--text-primary)" : "var(--text-secondary)",
-              fontWeight: 500,
+              color: isLogin ? "var(--text-primary)" : "var(--text-muted)",
+              fontWeight: 600,
               fontSize: "0.85rem",
               cursor: "pointer",
-              transition: "background var(--transition-fast)"
+              transition: "all var(--transition-fast)"
             }}
           >
             Sign In
@@ -130,15 +131,15 @@ export default function AuthModal({ isOpen, onClose }) {
             onClick={() => { setIsLogin(false); setError(""); }}
             style={{
               flex: 1,
-              padding: "6px",
+              padding: "8px",
               borderRadius: "var(--radius-sm)",
               border: "none",
               background: !isLogin ? "var(--bg-tertiary)" : "transparent",
-              color: !isLogin ? "var(--text-primary)" : "var(--text-secondary)",
-              fontWeight: 500,
+              color: !isLogin ? "var(--text-primary)" : "var(--text-muted)",
+              fontWeight: 600,
               fontSize: "0.85rem",
               cursor: "pointer",
-              transition: "background var(--transition-fast)"
+              transition: "all var(--transition-fast)"
             }}
           >
             Register
@@ -152,7 +153,7 @@ export default function AuthModal({ isOpen, onClose }) {
             background: "var(--status-error-bg)",
             border: "1px solid var(--status-error-border)",
             borderRadius: "var(--radius-md)",
-            color: "var(--status-error-text)",
+            color: "var(--status-error)",
             fontSize: "0.85rem",
             marginBottom: "16px",
             display: "flex",
@@ -170,9 +171,9 @@ export default function AuthModal({ isOpen, onClose }) {
             <label className="input-label">Email Address</label>
             <div style={{ position: "relative" }}>
               <Mail
-                size={15}
+                size={16}
                 color="var(--text-muted)"
-                style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}
+                style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }}
               />
               <input
                 type="email"
@@ -180,7 +181,7 @@ export default function AuthModal({ isOpen, onClose }) {
                 placeholder="developer@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={{ paddingLeft: "36px" }}
+                style={{ paddingLeft: "42px" }}
                 required
               />
             </div>
@@ -190,9 +191,9 @@ export default function AuthModal({ isOpen, onClose }) {
             <label className="input-label">Password</label>
             <div style={{ position: "relative" }}>
               <Lock
-                size={15}
+                size={16}
                 color="var(--text-muted)"
-                style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}
+                style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }}
               />
               <input
                 type="password"
@@ -200,25 +201,28 @@ export default function AuthModal({ isOpen, onClose }) {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ paddingLeft: "36px" }}
+                style={{ paddingLeft: "42px" }}
                 required
                 minLength={8}
               />
             </div>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+              Minimum 8 characters
+            </span>
           </div>
 
           <button
             type="submit"
             className="btn btn-primary"
             disabled={loading}
-            style={{ width: "100%", marginTop: "8px", padding: "10px" }}
+            style={{ width: "100%", marginTop: "8px", padding: "12px" }}
           >
             {loading ? (
               "Processing..."
             ) : (
               <>
-                {isLogin ? "Sign In" : "Register"}
-                <ArrowRight size={14} />
+                {isLogin ? "Sign In to Account" : "Create New Account"}
+                <ArrowRight size={16} />
               </>
             )}
           </button>
