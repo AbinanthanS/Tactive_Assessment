@@ -85,79 +85,76 @@ function DashboardContent() {
       <main style={{ flex: 1 }}>
         {!user ? (
           /* Unauthenticated Landing / Demo Hero */
-          <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "64px 24px", textAlign: "center" }}>
+          <div style={{ maxWidth: "860px", margin: "0 auto", padding: "72px 24px", textAlign: "center" }}>
             <div style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "8px",
-              padding: "6px 16px",
-              borderRadius: "var(--radius-full)",
-              background: "rgba(99, 102, 241, 0.1)",
-              border: "1px solid rgba(99, 102, 241, 0.3)",
-              color: "var(--accent-primary)",
-              fontSize: "0.85rem",
-              fontWeight: 600,
+              gap: "6px",
+              padding: "4px 12px",
+              borderRadius: "var(--radius-sm)",
+              background: "var(--bg-tertiary)",
+              border: "1px solid var(--border-subtle)",
+              color: "var(--text-secondary)",
+              fontSize: "0.8rem",
+              fontWeight: 500,
               marginBottom: "24px"
             }}>
-              <Zap size={15} />
-              Atomic PostgreSQL Fixed Window Rate Limiting
+              <Zap size={13} />
+              PostgreSQL Atomic Fixed-Window Rate Limiting
             </div>
 
-            <h1 style={{ fontSize: "3.2rem", lineHeight: 1.15, marginBottom: "20px" }}>
-              Enterprise API Security & <br />
-              <span className="gradient-text">Precision Rate Limiting</span>
+            <h1 style={{ fontSize: "2.8rem", lineHeight: 1.15, marginBottom: "18px", fontWeight: 600 }}>
+              API Rate Limiting &
+              <span style={{ color: "var(--accent-primary)" }}> Key Management</span>
             </h1>
 
-            <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", maxWidth: "680px", margin: "0 auto 36px", lineHeight: "1.6" }}>
-              RateGuard protects your backend APIs against bursts, DDoS, and quota overages with microsecond precision, cryptographic SHA-256 key hashing, and RFC-compliant response headers.
+            <p style={{ fontSize: "1rem", color: "var(--text-secondary)", maxWidth: "600px", margin: "0 auto 36px", lineHeight: "1.65" }}>
+              Protect your backend APIs with cryptographic key hashing, atomic window enforcement, and RFC-compliant rate-limit headers.
             </p>
 
-            <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap", marginBottom: "64px" }}>
+            <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap", marginBottom: "64px" }}>
               <button onClick={() => setIsAuthOpen(true)} className="btn btn-primary btn-lg">
-                <Lock size={18} />
-                Get Started / Sign In
+                <Lock size={16} />
+                Sign In / Register
               </button>
               <button
-                onClick={() => {
-                  setActiveTab("playground");
-                  // Allow trying playground with a dummy or test key
-                }}
+                onClick={() => { setActiveTab("playground"); }}
                 className="btn btn-secondary btn-lg"
               >
-                <Activity size={18} />
-                Explore Rate Limit Simulator
+                <Activity size={16} />
+                Explore Playground
               </button>
             </div>
 
             {/* Feature Highlights Grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", textAlign: "left" }}>
-              <div className="glass-panel" style={{ padding: "24px" }}>
-                <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "rgba(99, 102, 241, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
-                  <Shield size={22} color="var(--accent-primary)" />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px", textAlign: "left" }}>
+              <div className="glass-panel" style={{ padding: "20px" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "6px", background: "var(--bg-tertiary)", border: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px" }}>
+                  <Shield size={16} color="var(--accent-primary)" />
                 </div>
-                <h3 style={{ fontSize: "1.15rem", marginBottom: "6px" }}>SHA-256 Key Hashing</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                  Zero raw API key storage. Raw keys are presented only once at creation and cryptographically hashed with SHA-256 in the database.
+                <h3 style={{ fontSize: "1rem", marginBottom: "6px", fontWeight: 600 }}>SHA-256 Key Hashing</h3>
+                <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: "1.55" }}>
+                  Raw keys shown once at creation, stored only as one-way SHA-256 hashes.
                 </p>
               </div>
 
-              <div className="glass-panel" style={{ padding: "24px" }}>
-                <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "rgba(6, 182, 212, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
-                  <Zap size={22} color="#06b6d4" />
+              <div className="glass-panel" style={{ padding: "20px" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "6px", background: "var(--bg-tertiary)", border: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px" }}>
+                  <Zap size={16} color="var(--text-secondary)" />
                 </div>
-                <h3 style={{ fontSize: "1.15rem", marginBottom: "6px" }}>Atomic Upsert Windows</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                  PostgreSQL transaction-isolated <code>ON CONFLICT DO UPDATE</code> engine with epoch mathematical alignment eliminates race conditions.
+                <h3 style={{ fontSize: "1rem", marginBottom: "6px", fontWeight: 600 }}>Atomic Upsert Windows</h3>
+                <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: "1.55" }}>
+                  PostgreSQL <code>ON CONFLICT DO UPDATE</code> with epoch alignment eliminates race conditions.
                 </p>
               </div>
 
-              <div className="glass-panel" style={{ padding: "24px" }}>
-                <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "rgba(217, 70, 239, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
-                  <Key size={22} color="#d946ef" />
+              <div className="glass-panel" style={{ padding: "20px" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "6px", background: "var(--bg-tertiary)", border: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px" }}>
+                  <Key size={16} color="var(--text-secondary)" />
                 </div>
-                <h3 style={{ fontSize: "1.15rem", marginBottom: "6px" }}>Tiered Quotas</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                  Dynamic policy enforcement for Free (100 req/60s) and Pro (1000 req/60s) tiers with automatic <code>429</code> throttling.
+                <h3 style={{ fontSize: "1rem", marginBottom: "6px", fontWeight: 600 }}>Tiered Quotas</h3>
+                <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: "1.55" }}>
+                  Free (100 req/60s) and Pro (1000 req/60s) tiers with automatic <code>429</code> throttling.
                 </p>
               </div>
             </div>
