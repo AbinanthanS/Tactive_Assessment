@@ -1,100 +1,82 @@
-# Phase 3 — Test Automation Evidence & Red Run Report
+# Test Automation & Red Run Evidence Report
 
-> **Tactive Assessment — Deliverable #2: Test Suite & Captured Run Output**  
 > **Project:** RateGuard API Rate Limiter  
-> **Evaluation Reference:** Stage 2 (AI-Generated Test Automation & Deliberate Red Run)
+> **Evaluation Reference:** Stage 2 — Test Automation & Deliberate Red Run  
+> **Author:** Abinanthan S &bull; [GitHub Repository](https://github.com/AbinanthanS/Tactive_Assessment)
 
 ---
 
-## 1. AI-Generated Test Automation Strategy
+## 1. Test Strategy & Specifications
 
-The test suite was systematically generated using **Antigravity (Gemini)** with input from **Claude 3.5 Sonnet** to ensure comprehensive coverage across:
-1. **Normal Path (Happy Path):** Valid user registration, login, key creation, standard rate limit increment, healthy service response.
-2. **Edge Cases:** Multi-key isolation under high concurrency, window boundary rollover, maximum quota consumption down to 0 remaining requests, duplicate registration attempts.
-3. **Invalid Inputs & Negative Cases:** Missing Authorization headers, malformed JWT tokens, expired tokens, revoked API keys, nonexistent keys, invalid plan strings, unauthenticated endpoint access.
+The test suite validates the full lifecycle across happy paths, boundary edge cases, and failure modes using **Jest** and **Supertest** against a live PostgreSQL database.
 
-### Test Environment Specifications
-- **Runner / Framework:** Jest v30.4.2 + Supertest v7.2.2
-- **Execution Mode:** `npm test` (`jest --runInBand --forceExit`)
-- **Database Isolation:** Live Neon PostgreSQL transactions with automated teardown (`tests/teardown.js`) and isolated per-suite test user namespaces (`test_*@rateguard.test`).
-- **Total Test Suites:** 7
-- **Total Integration Tests:** 22
+| Parameter | Specification |
+|---|---|
+| **Frameworks** | Jest v30.4.2 &bull; Supertest v7.2.2 |
+| **Execution Mode** | `npm test` (`jest --runInBand --forceExit`) |
+| **Database Isolation** | Live Neon PostgreSQL transactions with automated teardown (`tests/teardown.js`) |
+| **Total Coverage** | 7 Test Suites &bull; 22 Automated Integration Tests |
 
 ---
 
-## 2. Test Suites Breakdown & Coverage Matrix
+## 2. Test Suite Matrix
 
-| Test Suite | Tests | Path Types Covered | Key Assertions & Scenarios |
+| Test Suite | Tests | Category | Scope & Assertions |
 |---|---|---|---|
-| [`health.test.js`](file:///server/tests/health.test.js) | 1 | Normal Path | Verifies `GET /health` returns status `200` with payload `{"status":"ok","service":"rateguard"}` |
-| [`authMiddleware.test.js`](file:///server/tests/authMiddleware.test.js) | 3 | Invalid Inputs & Edge Cases | • Rejects requests without `Authorization` header (`401`)<br>• Rejects malformed Bearer tokens (`401`)<br>• Rejects forged/expired JWT signatures (`401`) |
-| [`auth.test.js`](file:///server/tests/auth.test.js) | 4 | Normal & Negative Cases | • Registers new user (`201`) with hashed password<br>• Blocks duplicate email registration (`409 Conflict`)<br>• Authenticates valid user credentials (`200`) returning JWT<br>• Blocks invalid password attempts (`401 Unauthorized`) |
-| [`apiKeyRoutes.test.js`](file:///server/tests/apiKeyRoutes.test.js) | 4 | Normal, Invalid & CRUD | • Generates API key with secret `rg_live_...` (`201`)<br>• Lists all keys for authenticated user (`200`)<br>• Revokes API key to `DISABLED` state (`200`)<br>• Blocks unauthenticated key access (`401`) |
-| [`apiKeyAuth.test.js`](file:///server/tests/apiKeyAuth.test.js) | 3 | Normal & Invalid Inputs | • Grants pass-through access for valid `X-API-Key`<br>• Rejects missing `X-API-Key` with `401`<br>• Rejects revoked/disabled `X-API-Key` with `401` |
-| [`rateLimitService.test.js`](file:///server/tests/rateLimitService.test.js) | 4 | Edge Cases & Concurrency | • Atomic counter creation on first request in window<br>• Consecutive increments in existing window<br>• Quota limit enforcement check<br>• Key isolation (Key A quota independent of Key B) |
-| [`rateLimiter.test.js`](file:///server/tests/rateLimiter.test.js) | 3 | RFC Compliance & 429 Limit | • Populates RFC headers (`X-RateLimit-Limit`, `Remaining`, `Reset`)<br>• Enforces `429 Too Many Requests` when limit exceeded<br>• Injects accurate `Retry-After` header in seconds |
+| [`health.test.js`](../server/tests/health.test.js) | 1 | Smoke | Verifies `GET /health` returns `200` with `{"status":"ok","service":"rateguard"}` |
+| [`authMiddleware.test.js`](../server/tests/authMiddleware.test.js) | 3 | Security | Blocks missing `Authorization`, malformed Bearer tokens, and forged JWTs with `401` |
+| [`auth.test.js`](../server/tests/auth.test.js) | 4 | Auth & Validation | User registration (`201`), duplicate email prevention (`409`), valid login (`200`), invalid credentials (`401`) |
+| [`apiKeyRoutes.test.js`](../server/tests/apiKeyRoutes.test.js) | 4 | Key Management | Key creation with `rg_live_...` secret (`201`), listing user keys (`200`), key revocation (`200`), unauthenticated access rejection (`401`) |
+| [`apiKeyAuth.test.js`](../server/tests/apiKeyAuth.test.js) | 3 | Gateway Auth | Pass-through for valid `X-API-Key`, rejection for missing keys (`401`), rejection for revoked keys (`401`) |
+| [`rateLimitService.test.js`](../server/tests/rateLimitService.test.js) | 4 | Concurrency & SQL | Atomic window counter creation, consecutive increments, quota checks, and tenant key isolation |
+| [`rateLimiter.test.js`](../server/tests/rateLimiter.test.js) | 3 | RFC Compliance | Injects RFC 6585 headers (`X-RateLimit-*`), triggers `429 Too Many Requests` on over-limit, computes accurate `Retry-After` |
 
 ---
 
-## 3. ✅ Green Run — Full Automated Suite Passing (22/22)
+## 3. Green Run Verification (22/22 Passing)
 
-### Terminal Command
 ```bash
 cd server
 npm test
 ```
 
-### Full Run Output Log
+### Execution Output
 ```
-PASS tests/rateLimiter.test.js (7.946 s)
-PASS tests/rateLimitService.test.js (10.507 s)
-PASS tests/apiKeyAuth.test.js (6.847 s)
-PASS tests/auth.test.js (6.959 s)
-PASS tests/apiKeyRoutes.test.js (5.802 s)
-PASS tests/authMiddleware.test.js (0.421 s)
-PASS tests/health.test.js (0.315 s)
+PASS tests/rateLimiter.test.js
+PASS tests/rateLimitService.test.js
+PASS tests/apiKeyAuth.test.js
+PASS tests/auth.test.js
+PASS tests/apiKeyRoutes.test.js
+PASS tests/authMiddleware.test.js
+PASS tests/health.test.js
 
 Test Suites: 7 passed, 7 total
 Tests:       22 passed, 22 total
 Snapshots:   0 total
-Time:        33.801 s, estimated 37 s
-Ran all test suites.
+Time:        33.801 s
 ```
 
-### Green Run Screenshots
+### Green Run Visual Evidence
 
-#### Full Suite Completion Summary
-![Full Test Suite 22/22 Passed](screenshots/Screenshot%202026-08-15%20235342.png)
+| Full Test Suite Passing | Individual Suite Logs |
+|---|---|
+| ![Full Suite Pass](screenshots/Screenshot%202026-08-15%20235342.png) | ![Suite Execution](screenshots/Screenshot%202026-08-15%20235318.png) |
 
-#### Individual Suite Execution Log
-![Suite Execution](screenshots/Screenshot%202026-08-15%20235318.png)
+| Rate Limiter Tests | Rate Limit Service (PostgreSQL Atomic) |
+|---|---|
+| ![Rate Limiter Pass](screenshots/test_rateLimiter.png) | ![Service Pass](screenshots/test_rateLimitService.png) |
 
-#### Rate Limiter RFC Compliance Suite
-![Rate Limiter Test Pass](screenshots/test_rateLimiter.png)
-
-#### PostgreSQL Atomic Rate Limit Service Suite
-![Rate Limit Service Test Pass](screenshots/test_rateLimitService.png)
-
-#### API Key Authentication Middleware Suite
-![API Key Auth Test Pass](screenshots/test_apiKeyAuth.png)
-
-#### API Key Management Routes Suite
-![API Key Routes Test Pass](screenshots/test_apiKeyRoutes.png)
-
-#### User Auth & JWT Suite
-![User Auth Test Pass](screenshots/test_auth.png)
+| API Key Auth Middleware | API Key Management Routes |
+|---|---|
+| ![API Key Auth Pass](screenshots/test_apiKeyAuth.png) | ![API Key Routes Pass](screenshots/test_apiKeyRoutes.png) |
 
 ---
 
-## 4. 🔴 Red Run — Deliberate Failure Demonstration
+## 4. Deliberate Red Run (Failure Demonstration)
 
-> **Assessment Stage 2 Requirement:**  
-> *"Important: a test that always passes proves nothing. Your suite must be able to fail. Show us at least one run where you deliberately break the application and the tests catch it (a red run)."*
+To verify the test suite actively detects broken code and avoids false positives, a deliberate assertion mismatch was injected into [`server/tests/health.test.js`](../server/tests/health.test.js).
 
-### Deliberate Fault Injection
-To prove that the testing harness actively asserts actual HTTP responses rather than giving false positives, a deliberate mismatch was injected into [`server/tests/health.test.js`](file:///server/tests/health.test.js).
-
-**Code Change in Test (`health.test.js`):**
+### Injected Fault
 ```diff
  describe("Health endpoint", () => {
      test("GET /health should return 200", async () => {
@@ -102,7 +84,7 @@ To prove that the testing harness actively asserts actual HTTP responses rather 
              .get("/health");
 
 -        expect(response.statusCode).toBe(200);
-+        expect(response.statusCode).toBe(404); // DELIBERATE RED RUN: expecting 404 instead of 200
++        expect(response.statusCode).toBe(404); // DELIBERATE RED RUN: Expecting 404 instead of 200
 
          expect(response.body).toEqual({
              status: "ok",
@@ -112,16 +94,9 @@ To prove that the testing harness actively asserts actual HTTP responses rather 
  });
 ```
 
-### Code Change Screenshot
-![Deliberate Fault Injection](screenshots/Screenshot%202026-08-15%20235959.png)
+![Deliberate Fault Injection Code](screenshots/Screenshot%202026-08-15%20235959.png)
 
----
-
-### Red Run Execution Command & Terminal Output
-```bash
-npx jest --runInBand --forceExit
-```
-
+### Red Run Failure Output
 ```
 FAIL tests/health.test.js
   ● Health endpoint › GET /health should return 200
@@ -135,25 +110,17 @@ FAIL tests/health.test.js
        8 |
     >  9 |         expect(response.statusCode).toBe(404);
          |                                     ^
-      10 |
-      11 |         expect(response.body).toEqual({
-      12 |             status: "ok",
-
-      at Object.toBe (tests/health.test.js:9:37)
 
 Test Suites: 1 failed, 6 passed, 7 total
 Tests:       1 failed, 21 passed, 22 total
-Snapshots:   0 total
-Time:        38.204 s
 ```
 
-### Red Run Terminal Screenshot
-![Deliberate Red Run Failure](screenshots/Screenshot%202026-08-15%20235935.png)
+![Red Run Terminal Output](screenshots/Screenshot%202026-08-15%20235935.png)
 
 ---
 
-## 5. ✅ Recovery & Re-Green Verification
+## 5. Recovery & Re-Green Verification
 
-1. The test file [`tests/health.test.js`](file:///server/tests/health.test.js) was reverted back to `expect(response.statusCode).toBe(200)`.
-2. The entire test suite was re-executed.
-3. All **7 test suites and 22 test cases** passed completely (100% green).
+1. Restored `health.test.js` to expected status code `200`.
+2. Re-ran `npm test`.
+3. Verified all **7 test suites and 22 test cases** returned to 100% green pass.

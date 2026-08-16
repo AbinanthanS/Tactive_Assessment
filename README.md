@@ -1,130 +1,132 @@
 # RateGuard — API Rate Limiter
 
-> **Internship Hiring Assessment — Tactive**  
-> **Author:** Abinanthan S  
-> **Repository:** [https://github.com/AbinanthanS/Tactive_Assessment](https://github.com/AbinanthanS/Tactive_Assessment)
-
-
-
-
-## 🛠️ AI Tools Used (Ground Rules Compliance)
-
-In accordance with Section 4 of the assessment guidelines:
-
-- **Antigravity (Google DeepMind / Gemini 2.5 & 3.7):** Primary AI agent for project scaffolding, PostgreSQL atomic query optimization, test generation, and autonomous change loop orchestration.
-- **Claude 3.5 Sonnet (Anthropic):** Architectural review, threat modeling, and error handling matrix design.
-- **GitHub Copilot (OpenAI / GPT-4o):** Code completion and test assertion drafting.
+> **Multi-tenant API Gateway & Atomic PostgreSQL Rate Limiting**  
+> **Author:** Abinanthan S &bull; [GitHub Repository](https://github.com/AbinanthanS/Tactive_Assessment)
 
 ---
 
-## 🌟 System Overview & Scenario Selection
+## ⚡ Highlights
 
-**RateGuard** is a production-grade, multi-tenant API gateway and rate-limiting platform. It demonstrates how to achieve **high-concurrency atomic fixed-window rate limiting directly inside PostgreSQL** using atomic upserts (`INSERT ... ON CONFLICT DO UPDATE`), eliminating external caching layers (no Redis or Memcached).
-
-### Core Features
-- 🔑 **Cryptographic API Key Management:** Raw keys (`rg_live_...`) generated with 256 bits of entropy, displayed once, and stored exclusively as SHA-256 hashes.
-- ⚡ **Atomic Rate Limiter Middleware:** Concurrency-safe window increment and quota enforcement with sub-10ms latency.
-- 📜 **RFC 6585 Compliance:** Standard rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `Retry-After`).
-- 📊 **Real-Time Telemetry Dashboard:** React 19 SPA featuring a live interactive playground with Single (1x), Burst (5x), and Spam (15x) triggers, quota meters, and reset countdowns.
-- 📈 **Key Usage Analytics (AI Change Loop):** `GET /api/keys/:id/stats` endpoint returning lifetime requests, peak window traffic, and historical window telemetry.
+- **Atomic Fixed-Window Rate Limiting:** Enforced entirely within PostgreSQL via atomic upserts (`INSERT ... ON CONFLICT DO UPDATE`), eliminating external caching layers like Redis while guaranteeing zero race conditions.
+- **Cryptographic Key Management:** API keys (`rg_live_...`) generated with 256-bit entropy, displayed once, and stored exclusively as SHA-256 hashes.
+- **RFC 6585 Compliance:** Returns standard rate-limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `Retry-After`).
+- **Real-Time Telemetry Dashboard:** React 19 SPA featuring key management, live usage analytics, and an interactive test playground (1x, 5x, 15x request bursts).
+- **Comprehensive Test Suite:** 7 integration test suites with 22 automated tests covering normal paths, edge cases, and failure modes.
 
 ---
 
-## 🏗️ Architecture & Data Flow
+## 🛠️ Tech Stack & AI Ground Rules Compliance
+
+| Layer | Technology | Key Responsibility |
+|---|---|---|
+| **Frontend** | React 19, Vite, TailwindCSS / CSS | Dashboard, key management UI, real-time telemetry |
+| **Backend** | Node.js 20, Express 5 | API gateway routing, JWT auth, middleware pipeline |
+| **Database** | PostgreSQL (Neon Serverless) | Atomic rate limit windows, users, and API key hashes |
+| **Testing** | Jest, Supertest | End-to-end integration and concurrency testing |
+
+### AI Tools Utilized
+- **Antigravity (Google DeepMind / Gemini):** Full-stack scaffolding, PostgreSQL atomic query optimization, test suite generation, and change loop orchestration.
+- **Claude 3.5 Sonnet (Anthropic):** Architectural review, threat modeling, and error handling design.
+- **GitHub Copilot (OpenAI / GPT-4o):** In-editor autocompletion and test assertion drafting.
+
+---
+
+## 🏗️ Architecture
 
 ```
-[ Browser: React 19 + Vite (localhost:5173) ]
-  ├── Navbar (JWT Auth State)
-  ├── KeyManagement (CRUD API Keys & Stats)
-  └── RateLimitPlayground (Live Telemetry & Gauge)
+[ React 19 Frontend (Port 5173) ]
+  ├── Navbar (Auth & Session State)
+  ├── KeyManagement (CRUD Keys & Usage Stats)
+  └── RateLimitPlayground (Live Bursts & Telemetry)
              │
-             │ HTTP + Authorization: Bearer <JWT> OR X-API-Key: rg_live_...
+             │ HTTP (Authorization: Bearer <JWT> | X-API-Key: rg_live_...)
              ▼
-[ API Gateway: Express 5 / Node.js 20 (localhost:5000) ]
-  ├── /api/auth/*     → [authController]     → (users table)
-  ├── /api/keys/*     → [authenticate MW]    → [apiKeyService] → (api_keys table)
-  └── /api/demo       → [apiKeyAuth MW]      → [rateLimiter MW] → (rate_limit_windows table)
+[ Express 5 API Gateway (Port 5000) ]
+  ├── /api/auth/*    ──► [authController]    ──► (users)
+  ├── /api/keys/*    ──► [authenticate MW]   ──► [apiKeyService] ──► (api_keys)
+  └── /api/demo      ──► [apiKeyAuth MW]     ──► [rateLimiter MW] ──► (rate_limit_windows)
              │
              │ node-postgres (Connection Pool)
              ▼
-[ Database: PostgreSQL (Neon Serverless) ]
-  ├── users (id, email, password_hash, role)
-  ├── api_keys (id, user_id, name, key_hash, plan, requests_per_window, status)
-  └── rate_limit_windows (api_key_id, window_start, request_count) [UNIQUE constraint]
+[ PostgreSQL Database ]
+  ├── users                (id, email, password_hash, role)
+  ├── api_keys             (id, user_id, name, key_hash, plan, status)
+  └── rate_limit_windows   (api_key_id, window_start, request_count) [UNIQUE constraint]
 ```
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Quick Start
 
 ### Prerequisites
-- **Node.js:** v20.x or higher
-- **PostgreSQL Database:** Neon Serverless connection string or local PostgreSQL (v14+)
+- **Node.js:** v20+
+- **PostgreSQL:** Neon Serverless or local instance (v14+)
 - **Git**
 
----
+### 1. Clone & Configure Server
 
-### Step 1: Clone Repository
 ```bash
 git clone https://github.com/AbinanthanS/Tactive_Assessment.git
-cd Tactive_Assessment
-```
-
----
-
-### Step 2: Setup & Start Backend Server
-```bash
-cd server
+cd Tactive_Assessment/server
 npm install
-
-# Configure environment variables (.env)
 cp .env.example .env
 ```
 
-Ensure `server/.env` contains your database connection string and JWT secret:
+Update `server/.env`:
 ```env
 PORT=5000
-DATABASE_URL=postgresql://user:pass@host/dbname?sslmode=require
-JWT_SECRET=your_super_secret_jwt_key_here
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+JWT_SECRET=your_jwt_secret_key
 ```
 
-Initialize the database schema:
+Apply database schema:
 ```bash
-# Apply schema to PostgreSQL:
 psql $DATABASE_URL -f src/config/schema.sql
 ```
 
-Start the backend server:
+Start the backend:
 ```bash
 npm run dev
-# Server running at http://localhost:5000
+# Running at http://localhost:5000
 ```
 
----
+### 2. Configure & Start Client
 
-### Step 3: Setup & Start Frontend Dashboard
-Open a new terminal window:
+In a separate terminal:
 ```bash
-cd client
+cd Tactive_Assessment/client
 npm install
 npm run dev
-# Frontend running at http://localhost:5173
+# Running at http://localhost:5173
 ```
-
-Open `http://localhost:5173` in your browser to access the RateGuard Dashboard.
 
 ---
 
-## 🧪 Running Automated Tests
+## 📡 API Overview
 
-RateGuard includes **7 comprehensive integration test suites with 22 tests** covering normal execution paths, concurrency edge cases, and invalid input rejections.
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Create new user account |
+| `POST` | `/api/auth/login` | Public | Authenticate user & get JWT |
+| `GET` | `/api/me` | Bearer JWT | Retrieve current user profile |
+| `POST` | `/api/keys` | Bearer JWT | Generate new API key (`FREE` or `PRO`) |
+| `GET` | `/api/keys` | Bearer JWT | List all keys for active user |
+| `GET` | `/api/keys/:id/stats` | Bearer JWT | Key telemetry, lifetime requests & recent windows |
+| `DELETE` | `/api/keys/:id` | Bearer JWT | Revoke an API key |
+| `GET` | `/api/demo` | `X-API-Key` | Rate-limited gateway endpoint |
+| `GET` | `/health` | Public | Service health check |
+
+---
+
+## 🧪 Testing & Verification
+
+Run the automated integration test suite:
 
 ```bash
 cd server
 npm test
 ```
 
-### Expected Output
 ```
 PASS tests/rateLimiter.test.js
 PASS tests/rateLimitService.test.js
@@ -136,30 +138,26 @@ PASS tests/health.test.js
 
 Test Suites: 7 passed, 7 total
 Tests:       22 passed, 22 total
-Snapshots:   0 total
-Time:        33.801 s
 ```
 
-> 🔴 **Deliberate Red Run:** See [`docs/Test_evidence.md`](file:///docs/Test_evidence.md#4--red-run--deliberate-failure-demonstration) for full logs and screenshots of the intentional red run failure and subsequent recovery.
+> **Deliberate Red Run:** A intentional failure test run was executed to verify the test harness catches real issues. Full logs and screenshots are in [`docs/Test_evidence.md`](docs/Test_evidence.md).
 
 ---
 
-## 🔄 The AI Change Loop (Stage 3)
+## 🔄 AI Change Loop (Stage 3)
 
-The AI change loop was executed to introduce the `GET /api/keys/:id/stats` endpoint:
-- **Attempt 1:** Generated initial service and controller; discovered SQL `numeric` string serialization issues and null aggregations on unused keys.
-- **Attempt 2:** Injected `::int` casts and `COALESCE(..., 0)` defaults; detected cross-tenant authorization vulnerability.
-- **Attempt 3:** Injected user ownership verification returning `404 Not Found`.
-- **Attempt 4:** Resolved Express router precedence and verified full 22/22 green test run.
+The `GET /api/keys/:id/stats` endpoint was developed through an autonomous 4-step AI iteration loop:
+1. **Attempt 1:** Initial service/controller generated; identified SQL string serialization and null aggregations.
+2. **Attempt 2:** Added `::int` casting and `COALESCE(..., 0)`; detected cross-tenant data vulnerability.
+3. **Attempt 3:** Injected user ownership validation returning `404 Not Found`.
+4. **Attempt 4:** Fixed route order precedence and verified 100% pass across all 22 tests.
 
-For the full prompt logs, diffs, and diagnostics, see [`docs/AI_change_loop.md`](file:///docs/AI_change_loop.md).
+Detailed prompt logs and diffs are in [`docs/AI_change_loop.md`](docs/AI_change_loop.md).
 
 ---
 
-## 📚 Complete Documentation Set
+## 📚 Documentation Index
 
-- 📖 [Full Architecture, Design & User Guide](file:///docs/Documentation.md)
-- 🧪 [Test Automation & Red Run Evidence](file:///docs/Test_evidence.md)
-- 🔄 [AI Change Loop Evidence Log](file:///docs/AI_change_loop.md)
-- 📊 [Presentation Deck](file:///docs/Presentation_deck.md)
-- 🎥 [Video Presentation & Demo Guide](file:///docs/Video_demo_guide.md)
+- [Architecture, Design & User Guide](docs/Documentation.md) — System design, schema, algorithm, and UI walkthrough.
+- [Test Automation & Red Run Evidence](docs/Test_evidence.md) — Test matrix, green run logs, and deliberate failure evidence.
+- [AI Change Loop Evidence Log](docs/AI_change_loop.md) — 4-iteration self-correction cycle for the telemetry feature.
